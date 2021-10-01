@@ -1,0 +1,185 @@
+<%- include("template/head") %>
+
+    <div class="container">
+        <h1 class="h1">Pruebas</h1>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">1. Conectarse al enlace</h5>
+                            <p class="card-text">Conexión: <%= respuesta.res1 %>
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">2. Obtener el número de respuestas contestadas y no contestadas</h5>
+                            <p class="card-text">Respuestas contestada: <%= respuesta.res2.contada %>
+                            </p>
+                            <p class="card-text">Respuestas no contestada: <%= respuesta.res2.nocontada %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">3. Obtener la respuesta con mayor owners</h5>
+                            <p class="card-text">Mayor reputación de owners: <%= respuesta.res3 %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">4. Obtener la respuesta con menor número de vistas</h5>
+                            <p class="card-text">Valor minimo: <%= respuesta.res4 %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">5. Obtener la respuesta más vieja y más actual</h5>
+                            <p class="card-text">Fecha más vieja: <%= respuesta.res5.fecha_vieja %>
+                            </p>
+                            <p class="card-text">Fecha más actual: <%= respuesta.res5.fecha_actual %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light mb-3" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">6. Imprimir en consola del punto 2 al 5</h5>
+                            <p class="card-text">Se realiza la impresión en consola</p>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <br>
+        <h2>Mysql</h2>
+        <p>NOTA: En el documento venia en la tabla de aeropuertos el nombre asi "nombre_aerolinea" y lo cambie por "nombre_aeropuerto"</p>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-6 mt-1">
+                    <div class="card" style="width: 90%;">
+                        <div class="card-body">
+                            <h5 class="card-title">1. ¿Cuál es el nombre aeropuerto que ha tenido mayor movimiento
+                                durante el año?</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Benito Juarez y La paz</h6>
+                            <p class="card-text">
+                                select v.id_aeropuerto,count(id_movimiento) as movimientos,nombre_aeropuerto,dia
+                                from vuelos as v inner join aeropuertos as a
+                                on v.id_aeropuerto = a.id_aeropuerto
+                                where YEAR(v.dia) = YEAR(CURDATE())
+                                group by a.id_aeropuerto having movimientos =
+                                (select count(id_movimiento) as s
+                                from vuelos as v
+                                inner join aeropuertos as a
+                                on v.id_aeropuerto = a.id_aeropuerto
+                                where YEAR(v.dia) = YEAR(CURDATE())
+                                group by a.id_aeropuerto
+                                order by s DESC
+                                LIMIT 1
+                                );
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6  mt-1">
+                    <div class="card" style="width: 90%;">
+                        <div class="card-body">
+                            <h5 class="card-title">2. ¿Cuál es el nombre aerolínea que ha realizado mayor número de
+                                vuelos durante el año?</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Aeromar e Interjet</h6>
+                            <p class="card-text">select v.id_aerolinea,count(id_movimiento) as
+                                movimientos,nombre_aerolinea
+                                from vuelos as v inner join aerolineas as a
+                                on v.id_aerolinea = a.id_aerolinea
+                                where YEAR(v.dia) = YEAR(CURDATE())
+                                group by a.id_aerolinea having movimientos =
+                                (select count(id_movimiento) as s
+                                from vuelos as v
+                                inner join aerolineas as a
+                                on v.id_aerolinea = a.id_aerolinea
+                                where YEAR(v.dia) = YEAR(CURDATE())
+                                group by a.id_aerolinea
+                                order by s DESC
+                                LIMIT 1
+                                );</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mt-1">
+                    <div class="card" style="width: 90%;">
+                        <div class="card-body">
+                            <h5 class="card-title">3. ¿En qué día se han tenido mayor número de vuelos?</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">La fecha 2021-05-02 </h6>
+                            <p class="card-text">
+                                select dia,max(maxdia) from (select vuelos.dia as dia,count(dia) as maxdia
+                                from vuelos
+                                inner join aerolineas on aerolineas.id_aerolinea = vuelos.id_aerolinea
+                                group by vuelos.dia
+                                ) as T;
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6  mt-1">
+                    <div class="card" style="width: 90%;">
+                        <div class="card-body">
+                            <h5 class="card-title">4. ¿Cuáles son las aerolíneas que tienen mas de 2 vuelos por día?
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Aeromar, Interjet y Volaris </h6>
+                            <table class="table">
+                                <tbody>
+                                    <tr>
+                                        <td>Volaris</td>
+                                        <td>2</td>
+                                        <td>2021-05-02</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Aeromar</td>
+                                        <td>2</td>
+                                        <td>2021-05-02</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Interjet</td>
+                                        <td>2</td>
+                                        <td>2021-05-04</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <p class="card-text">select nombre,cantidad_vuelos,dia from
+                                (SELECT aerolineas.nombre_aerolinea as nombre,COUNT(vuelos.dia) as
+                                cantidad_vuelos,vuelos.dia as dia
+                                FROM vuelos
+                                inner join aerolineas on aerolineas.id_aerolinea = vuelos.id_aerolinea
+                                GROUP BY vuelos.dia,aerolineas.id_aerolinea) as t
+                                where cantidad_vuelos >= 2;</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <%- include("template/footer") %>
